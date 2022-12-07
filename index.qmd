@@ -1,0 +1,83 @@
+---
+title: "SevillaR: Directorio de miembros"
+format: html
+---
+
+Miembros del grupo de usuarios de R de Sevilla ([SevillaR](https://sevillarusers.netlify.app/)).
+
+Para darte de alta rellena tus datos en este [formulario](https://forms.gle/pMnAnSXzv1AV2rqL7). Si quieres actualizar o corregir un error en los datos por favor abre un ‘issue’ en este [repositorio](https://github.com/SevillaR/miembros/issues) de GitHub o escribe a SevillaRUG@gmail.com.
+
+```{r}
+#| include: FALSE
+knitr::opts_chunk$set(echo=FALSE, warning = FALSE, message = FALSE)
+```
+
+
+```{r}
+library(readr)
+library(dplyr)
+library(DT)
+
+datos <- readr::read_csv("datos.csv") |> 
+  select(-Timestamp) 
+names(datos) <- c("Nombre", "Afiliación", "Web", "LinkedIn", "Twitter", "Palabras clave", "lat", "lon")
+
+datos <- datos |> 
+  mutate(Web = ifelse(!is.na(Web) & !stringr::str_starts(Web, "http://|https://"),
+                      paste0("http://", Web),
+                      Web)) |> 
+  mutate(Name = ifelse(!is.na(Web), 
+                       paste0('<a href="', Web, '" target="_blank">', Nombre, '</a>'),
+                       Nombre)) |> 
+  mutate(LinkedIn = ifelse(!is.na(LinkedIn), 
+                          paste0('<a href="', LinkedIn, 
+                                 '" target="_blank">', 
+                                 "Ver", 
+                                 '</a>'),
+                          LinkedIn)) |> 
+  mutate(Twitter = ifelse(!is.na(Twitter), 
+                          paste0('<a href="', Twitter, 
+                                 '" target="_blank">', 
+                                 stringr::str_extract(Twitter, "(?<=twitter.com/).*(?!/)"), 
+                                 '</a>'),
+                          stringr::str_extract(Twitter, "(?<=twitter.com/).*(?!/)")))
+```
+
+## Tabla
+
+```{r}
+datos.tabla <- datos |> 
+  select(Name, `Afiliación`, LinkedIn, Twitter, `Palabras clave`) |> 
+  rename(Nombre = Name) |> 
+  slice_sample(n = nrow(datos))
+
+DT::datatable(datos.tabla, rownames = FALSE, filter = "top", escape = c(-1, -3, -4))
+```
+
+## Mapa
+
+```{r }
+#| out.width="100%"
+
+library(leaflet)
+
+icon.r <- makeIcon(
+  iconUrl = "logoSevillaR.png",
+  iconWidth = 20, iconHeight = 20,
+  iconAnchorX = 10, iconAnchorY = 10
+)
+
+datos |> 
+  dplyr::select(Name, lon, lat) |> 
+  leaflet() |> 
+  fitBounds(-6.5, 36.8, -5.5, 38) |> 
+  addProviderTiles(providers$CartoDB.Positron, 
+                   options = providerTileOptions(noWrap = TRUE)) |> 
+  addMarkers(
+    ~lon, ~lat,
+    popup = ~Name,
+    icon = icon.r,
+    clusterOptions = markerClusterOptions()
+  )
+```
+
