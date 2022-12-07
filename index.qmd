@@ -5,7 +5,9 @@ format: html
 
 Miembros del grupo de usuarios de R de Sevilla ([SevillaR](https://sevillarusers.netlify.app/)).
 
-Para darte de alta rellena tus datos en este [formulario](https://forms.gle/pMnAnSXzv1AV2rqL7). Si quieres actualizar o corregir un error en los datos por favor abre un ‘issue’ en este [repositorio](https://github.com/SevillaR/miembros/issues) de GitHub o escribe a SevillaRUG@gmail.com.
+Para darte de alta rellena tus datos en este [formulario](https://forms.gle/pMnAnSXzv1AV2rqL7). Periódicamente revisaremos la base de datos y actualizaremos este directorio (última actualización: `r Sys.time()`).
+
+Si quieres actualizar o corregir un error en los datos por favor abre un ‘issue’ en este [repositorio](https://github.com/SevillaR/miembros/issues) de GitHub o escribe a SevillaRUG@gmail.com.
 
 ```{r}
 #| include: FALSE
